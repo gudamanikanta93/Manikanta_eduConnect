@@ -45,22 +45,14 @@ public class CourseDAOImpl implements CourseDAO {
     @Override
     public void updateCourse(Course course) throws SQLException {
         Connection connection = DatabaseConnectionManager.getConnection();
-
         String query = "UPDATE course SET course_name = ?,description = ?,teacher_id = ? WHERE course_id = ?";
-
         PreparedStatement ps = connection.prepareStatement(query);
-
         ps.setString(1, course.getCourseName());
-
         ps.setString(2, course.getDescription());
-
         ps.setInt(3, course.getTeacherId());
-
         ps.setInt(4, course.getCourseId());
-
         ps.executeUpdate();
     }
-
     @Override
     public void deleteCourse(int courseId) throws SQLException {
         Connection connection = DatabaseConnectionManager.getConnection();
