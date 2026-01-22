@@ -18,7 +18,7 @@ public class CourseDAOImpl implements CourseDAO {
         PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, course.getCourseName());
         ps.setString(2, course.getDescription());
-        ps.setInt(3, course.getTeacherId());
+        ps.setInt(3,course.getTeacher().getTeacherId());
         ps.executeUpdate();
         ResultSet gk = ps.getGeneratedKeys();
         if (gk.next()) {
@@ -49,45 +49,31 @@ public class CourseDAOImpl implements CourseDAO {
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, course.getCourseName());
         ps.setString(2, course.getDescription());
-        ps.setInt(3, course.getTeacherId());
+        ps.setInt(3, course.getTeacher().getTeacherId());
         ps.setInt(4, course.getCourseId());
         ps.executeUpdate();
     }
     @Override
     public void deleteCourse(int courseId) throws SQLException {
         Connection connection = DatabaseConnectionManager.getConnection();
-
         String query = "DELETE FROM course WHERE course_id = ?";
-
         PreparedStatement ps = connection.prepareStatement(query);
-
         ps.setInt(1, courseId);
-
         ps.executeUpdate();
     }
 
     @Override
     public List<Course> getAllCourses() throws SQLException {
         Connection connection = DatabaseConnectionManager.getConnection();
-
         List<Course> courses = new ArrayList<>();
-
         String query = "SELECT * FROM course";
-
         PreparedStatement ps = connection.prepareStatement(query);
-
         ResultSet rs = ps.executeQuery();
-
         while (rs.next())
-
         {
-
             courses.add(new Course(rs.getInt("course_id"), rs.getString("course_name"), rs.getString("description"),
                     rs.getInt("teacher_id")));
-
         }
-
         return courses;
     }
-
 }
