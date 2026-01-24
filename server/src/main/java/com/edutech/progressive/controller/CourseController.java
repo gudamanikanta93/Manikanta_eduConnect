@@ -1,32 +1,97 @@
 package com.edutech.progressive.controller;
 
-import com.edutech.progressive.entity.Course;
-import org.springframework.http.ResponseEntity;
-
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.edutech.progressive.entity.Course;
+import com.edutech.progressive.service.impl.CourseServiceImplJpa;
+
+
+@RestController
+@RequestMapping("/course")
 public class CourseController {
+
+    @Autowired
+    CourseServiceImplJpa courseServiceImplJpa;
+
+    @GetMapping
     public ResponseEntity<List<Course>> getAllCourses() {
-        return null;
+        try {
+            List<Course> courseList = courseServiceImplJpa.getAllCourses();
+            return new ResponseEntity<>(courseList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public ResponseEntity<Course> getCourseById(int courseId) {
-        return null;
+    @GetMapping("/{courseId}")
+    public ResponseEntity<?> getCourseById(@PathVariable int courseId) {
+        try {
+            Course course = courseServiceImplJpa.getCourseById(courseId);
+            return new ResponseEntity<>(course, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public ResponseEntity<Integer> addCourse(Course course) {
-        return null;
+    @PostMapping
+    public ResponseEntity<?> addCourse(@RequestBody Course course) {
+        try {
+            int courseId = courseServiceImplJpa.addCourse(course);
+            return new ResponseEntity<>(courseId, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public ResponseEntity<Void> updateCourse(int courseId, Course course) {
-        return null;
+    @PutMapping("/{courseId}")
+    public ResponseEntity<?> updateCourse(@PathVariable int courseId, @RequestBody Course course) {
+        try {
+            course.setCourseId(courseId);
+            courseServiceImplJpa.updateCourse(course);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public ResponseEntity<Void> deleteCourse(int courseId) {
-        return null;
+    @DeleteMapping("/{courseId}")
+    public ResponseEntity<?> deleteCourse(@PathVariable int courseId) {
+        try {
+            courseServiceImplJpa.deleteCourse(courseId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public ResponseEntity<List<Course>> getAllCourseByTeacherId(int teacherId) {
-        return null;
+    @GetMapping("/teacher/{teacherId}")
+    public ResponseEntity<List<Course>> getAllCourseByTeacherId(@PathVariable int teacherId) {
+        try {
+            List<Course> courseList = courseServiceImplJpa.getAllCourseByTeacherId(teacherId);
+            return new ResponseEntity<>(courseList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
